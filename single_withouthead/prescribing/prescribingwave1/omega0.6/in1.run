@@ -1,0 +1,83 @@
+log log1.lammps
+label loop
+variable fn loop 0 4
+dimension 2
+units lj
+boundary  p p p
+atom_style 2 sdpdve/no/edyn
+
+read_data ./atoms.data
+
+variable t0 equal 20
+variable hp equal -10.0
+variable Q equal 1.02423522856
+variable kappa equal 7
+variable P0 equal 6400
+variable Pb equal -${P0}+80.0
+variable sdist equal 0
+variable y02 equal 0
+variable y01 equal 0
+variable dx equal 0.4
+variable Ls equal 20.0
+variable Ly equal 40.0
+variable Lx equal 40.0
+variable T equal 1e-06
+variable rho0 equal 6.25
+variable Dt equal 0.0005
+variable b equal 1.0
+variable k equal 0.314159265359
+variable omega equal -0.6
+variable v0 equal -${omega}/${k}
+variable rc equal 1.6
+variable rcc equal 1.6
+variable mu equal 60.0
+variable ddx1 atom (1-cos(atan(${k}*${b}*cos(${k}*(x-${hp}-${v0}*time))))*${Q})*${v0}
+variable ddy1 atom -sin(atan(${k}*${b}*cos(${k}*(x-${hp}-${v0}*time))))*${Q}*${v0}
+
+variable tau equal 1.0+${fn}
+variable Np equal round(40.0/${T}/${rho0}/${tau})
+variable tot equal 400000
+variable sample equal 20000
+variable st equal 20000
+
+variable Lyl equal -${Ly}/2.0+2.0
+variable Lyu equal ${Ly}/2.0-2.0
+
+neighbor 0.5 bin
+neigh_modify every 10 check no
+lattice sq 1.0
+
+region subbox1 block EDGE EDGE EDGE ${Lyl} EDGE EDGE
+region subbox2 block EDGE EDGE ${Lyu} EDGE EDGE EDGE
+region subbox union 2 subbox1 subbox2
+
+group sol type 1
+group sheet1 type 2
+group sheet type 2
+group empty empty
+pair_style sdpdve/no/fluc/2d ${P0} ${Pb} ${kappa} $T all ${rc} 9846 empty ${rho0} ${tau} ${Np}
+
+pair_coeff * * ${rho0} ${mu} 0 ${rc}
+pair_coeff 1 2 ${rho0} ${mu} 0 ${rcc}
+
+velocity sol create $T 18475 rot yes dist gaussian
+
+fix 1 sol nve/sdpdve/no/edyn
+fix 2 sheet1 move variable NULL NULL NULL v_ddx1 v_ddy1 NULL
+fix 11 all enforce2d
+
+comm_modify vel yes
+compute T sol temp
+thermo_modify temp T lost warn flush yes
+timestep ${Dt}
+thermo 100
+dump 1 all custom ${sample} lammpstrj-${tau}.data id type x y z
+
+compute cvxf sol reduce/region subbox ave vx
+fix 69 sol ave/time 1 200 200 c_cvxf mode scalar ave one file vxf-${tau}.data start ${st}
+
+run ${tot}
+
+clear
+next fn
+jump SELF loop
