@@ -33,7 +33,7 @@ The simulations are run using the code at `https://github.com/mokchie/lammps_fla
 
 In the folders mentioned above the files with name “in.run” are the input scripts for LAMMPS. The “domain.py” files are the script to generate the models (data files to be read by lammps). The “set_vars.py” files are the script modifying the input scripts for lammps.  Note to run these python scripts, the directory of the custom python module “pythonmod” has to be appended to the “PYTHONPATH” environment variable.
 
-7. The folder “pythonmod” contains the custom python modules needed for the pretprocessing of the simulation model and postprocessing of the simulation output data.
+7. The folder “pythonmod” contains the custom python modules needed for the preprocessing of the simulation model and postprocessing of the simulation output data.
 
 
 #### The scripts that generate the figures presented in the manuscript are as follows:
