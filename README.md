@@ -2,7 +2,7 @@
 
 The simulation, preprocessing and postprocessing scripts for clustering swimmers simulation
 
-This repository contains all the simulation, preprocessing, and  postprocessing scripts for the manuscript “Hydrodynamic clustering of two finite-length flagellated swimmers in viscoelastic fluids” 
+This repository contains all the simulation, preprocessing, and  postprocessing scripts for the paper "Hydrodynamic clustering of two finite-length flagellated swimmers in viscoelastic fluids" by C. Mo and D. Fedosov [Journal of the Royal Society Interface, 20 (199):20220667, 2023, http://doi.org/10.1098/rsif.2022.0667].
 
 The simulations are run using the code at `https://github.com/mokchie/lammps_flagellated_swimmer.git`
 
